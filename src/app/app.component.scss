@@ -1,0 +1,17 @@
+@import 'imports';
+
+.page-grid {
+  display: grid;
+  grid-template-rows: $row-height auto;
+  height: 100%;
+  grid-template-columns: 1fr;
+}
+
+nav {
+  grid-row-start: 1;
+}
+
+main {
+  grid-row-start: 2;
+  overflow-y: auto;
+}

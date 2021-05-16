@@ -1,0 +1,5 @@
+﻿<ul>
+  <li routerLinkActive="active" *ngFor="let link of menuItems">
+    <a [routerLink]="link.route">{{link.label}}</a>
+  </li>
+</ul>

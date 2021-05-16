@@ -1,0 +1,20 @@
+﻿@import 'imports';
+
+.toolbar-container {
+  padding: $padding;
+  height: $row-height;
+  width: 100%;
+  background-color: $c-surface;
+  display: flex;
+  align-items: center;
+  & > * {
+    height: 100%;
+  }
+}
+
+::ng-deep {
+  span {
+    font-size: 16pt;
+    font-family: architect, sans-serif;
+  }
+}

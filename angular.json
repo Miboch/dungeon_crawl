@@ -20,6 +20,11 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "src/assets"
+              ]
+            },
             "outputPath": "dist/dungeon",
             "index": "src/index.html",
             "main": "src/main.ts",
@@ -28,7 +33,9 @@
             "inlineStyleLanguage": "scss",
             "assets": [
               "src/favicon.ico",
-              "src/assets"
+              "src/assets",
+              "src/game/game-assets",
+              "src/generated"
             ],
             "styles": [
               "src/styles.scss"
