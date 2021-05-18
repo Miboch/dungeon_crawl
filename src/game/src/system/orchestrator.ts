@@ -1,4 +1,4 @@
-﻿import {AssetLoader, Clock, Renderer} from '@game/index';
+﻿import {AssetLoader, Clock, InputHandler, Renderer} from '@game/index';
 
 export class Orchestrator {
 
@@ -21,7 +21,9 @@ export class Orchestrator {
     if (this.bootstrapped) return;
     Clock.getInstance(); // instantiates and starts the timer.
     AssetLoader.getInstance() // begin preloading assets.
+    InputHandler.getInstance(); // register key event handler etc.
     Clock.getInstance().addContinuousObserver((n) => Renderer.getInstance().drawGame());
+
   }
 
 }

@@ -1,4 +1,4 @@
-﻿import {AssetLoader} from '@game/src/system/asset-loader';
+﻿import {DispatchEvent, Key, KeyState} from '@game/index';
 
 export class InputHandler {
   static _instance: InputHandler;
@@ -8,28 +8,44 @@ export class InputHandler {
     return InputHandler._instance;
   }
 
-  private constructor() {
+  keys = Key;
+  keyStateMap: { [key: string]: KeyState }
 
+  private constructor() {
+    this.keyStateMap = {};
+    this.setupEventListener();
+    this.setupMap();
   }
 
+  mapKeyEvent(keycode: Key, dispatcher: DispatchEvent) {
+  }
+
+  raiseEvents() {
+    for (let key of Object.values(this.keys)) {
+
+    }
+  }
 
   private setupEventListener() {
-    window.addEventListener('keydown', (e) => {
-      if (e.code == 'KeyD') {
-      }
+    window.addEventListener('keydown', (event) => {
+      if (this.isMappedKey(event.code))
+        this.keyStateMap[event.code].pressed = true;
+    });
 
-      if (e.code == 'KeyA') {
-      }
-
-      if (e.code == 'KeyW') {
-      }
-
-      if (e.code == 'KeyS') {
-      }
-
-      if (e.code == "Space") {
-      }
+    window.addEventListener('keyup', (event) => {
+      if (this.isMappedKey(event.code))
+        this.keyStateMap[event.code].pressed = false;
     })
+  }
+
+  private isMappedKey(key: string) {
+    return key in this.keyStateMap
+  }
+
+  private setupMap() {
+    for (let key of Object.values(this.keys)) {
+      this.keyStateMap[key] = {pressed: false, registeredEvents: []}
+    }
   }
 
 
