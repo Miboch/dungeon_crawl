@@ -1,4 +1,4 @@
-﻿import {AssetLoader, RenderingContext, Transform} from '@game/index';
+﻿import {AssetLoader, Orchestrator, RenderingContext, Transform} from '@game/index';
 import {GameEntity} from '@game/src/model/game-entity';
 
 export class Renderer {
@@ -45,9 +45,12 @@ export class Renderer {
   }
 
   drawSprites() {
-    const e = new GameEntity(AssetLoader.getInstance().getSprite('player'), new Transform())
-    if (e.sprite.spriteReady)
-      this.context.drawImage(e.sprite.imageData, e.transform.x, e.transform.y);
+    const e = Orchestrator.getInstance().gameEntities;
+    for (let i = 0; i < e.length; i++) {
+      if (!e[i].sprite.spriteReady) continue;
+      this.context.drawImage(e[i].sprite.imageData, e[i].transform.x, e[i].transform.y)
+    }
+
   }
 
 

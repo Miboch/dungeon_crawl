@@ -9,7 +9,7 @@
   private paused = false;
 
   // timing
-  private updateRate = 30;
+  private updateRate = 60;
   private frameRate = 1000 / this.updateRate
   private deltaTime = 0;
   private timeBefore = 0;

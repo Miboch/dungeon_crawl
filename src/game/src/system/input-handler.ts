@@ -1,4 +1,5 @@
 ﻿import {DispatchEvent, Key, KeyState} from '@game/index';
+import {EventBus} from '@game/index';
 
 export class InputHandler {
   static _instance: InputHandler;
@@ -18,11 +19,15 @@ export class InputHandler {
   }
 
   mapKeyEvent(keycode: Key, dispatcher: DispatchEvent) {
+    this.keyStateMap[keycode].registeredEvents.push(dispatcher);
   }
 
   raiseEvents() {
     for (let key of Object.values(this.keys)) {
-
+      if (!this.keyStateMap[key].pressed) continue;
+      this.keyStateMap[key].registeredEvents.forEach(e => {
+        EventBus.getInstance().raise(e);
+      })
     }
   }
 

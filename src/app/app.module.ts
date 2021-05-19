@@ -7,9 +7,8 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {components, routedComponents} from './components';
 import {MaterialModule} from './material.module';
 import {CanvasSpyDirective} from './directives/canvas-spy.directive';
-import {ActivatedRoute, NavigationEnd, NavigationStart, Router} from '@angular/router';
+import {NavigationEnd, NavigationStart, Router} from '@angular/router';
 import {Clock} from '@game/src/system';
-import {take} from 'rxjs/operators';
 
 @NgModule({
   declarations: [

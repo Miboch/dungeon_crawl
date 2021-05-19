@@ -1,7 +1,8 @@
-﻿import {DispatchEvent} from '@game/src/model';
+﻿import {DispatchEvent, InputEventTypes} from '@game/src/model';
 
 export class EventBus {
   static _instance: EventBus;
+  inputEvents = InputEventTypes;
 
   static getInstance(): EventBus {
     if (!EventBus._instance) EventBus._instance = new EventBus();
@@ -18,8 +19,19 @@ export class EventBus {
   }
 
   setupObservableMap() {
-
+    Object.values(this.inputEvents).forEach(v => {
+      this.observableMap[v] = [];
+    })
   }
+
+  registerEvent(eventName: string, callback: (n: number) => void) {
+    this.observableMap[eventName].push(callback);
+  }
+
+  raise(event: DispatchEvent) {
+    this.events.push(event);
+  }
+
 
   flush(deltaTime: number) {
     this.events.forEach(event => {
