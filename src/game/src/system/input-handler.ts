@@ -9,31 +9,63 @@ export class InputHandler {
     return InputHandler._instance;
   }
 
-  private keys = Key;
   private readonly keyStateMap: { [key: string]: KeyState }
   private readonly sequenceStateMap: { [key: string]: KeyState }
   private readonly maxSequence = 10;
   private readonly sequenceKeyLifetime = 1500 / 1000;
   private readonly canvasRef: HTMLCanvasElement;
 
-  private sequence: SequenceKey[] = [];
+  private keys = Key;
+  private sequence: SequenceKey[];
   private eventBus = EventBus.getInstance();
+  private mousePosition: Coordinate;
+  private mouseOnCanvas = false;
 
   private constructor() {
+    this.sequence = [];
     this.keyStateMap = {};
     this.sequenceStateMap = {};
+    this.mousePosition = [0, 0];
+    this.canvasRef = document.querySelector('canvas') as HTMLCanvasElement; // add an ID instead, in case of more canvas elements in future.
     this.setupEventListener();
     this.setupMap();
-    this.canvasRef = document.querySelector('canvas') as HTMLCanvasElement; // add an ID instead, in case of more canvas elements in future.
+  }
+
+  addKey(key: Key, dispatcher: DispatchEvent) {
+    this.keyStateMap[key].registeredEvents.push(dispatcher);
+  }
+
+  addKeyToggle(key: Key, dispatcher: DispatchEvent) {
+    this.keyStateMap[key].tapEvents.push(dispatcher);
+  }
+
+  addKeySequence(keys: Key[], dispatcher: DispatchEvent) {
+    const aggregateKey = keys.reduce((str, k) => str += k, "");
+    const state = this.sequenceStateMap[aggregateKey];
+    if (Boolean(state)) {
+      state.registeredEvents.push(dispatcher);
+    } else {
+      this.sequenceStateMap[aggregateKey] = {tapEvents: [], registeredEvents: [dispatcher], pressed: false}
+    }
+  }
+
+  frame(deltaTime: number) {
+    this.raiseEvents();
+    this.timeoutKey(deltaTime);
   }
 
   private setupEventListener() {
     window.addEventListener('keydown', (e) => this.handleKeypress(e));
     window.addEventListener('keyup', (e) => this.handleKeypress(e, false));
-    window.addEventListener('mousedown', (event) => this.handleMouseEvent(event));
+    window.addEventListener('mousedown', (event) => this.handleMouseClickEvent(event));
+    window.addEventListener('mousemove', (event) => this.handleMouseMove(event));
     window.addEventListener('contextmenu', (event) => {
       if (event.target === this.canvasRef) event.preventDefault();
     });
+
+    this.canvasRef.addEventListener('mouseenter', () => this.mouseOnCanvas = true);
+    this.canvasRef.addEventListener('mouseleave', () => this.mouseOnCanvas = false);
+
   }
 
   private setupMap() {
@@ -45,36 +77,46 @@ export class InputHandler {
   private handleKeypress(event: KeyboardEvent, down: boolean = true) {
     if (this.isMappedKey(event.code)) {
       if (down) {
-        this.keyStateMap[event.code].pressed = true;
+        if (!this.keyStateMap[event.code].pressed) {
+          this.keyStateMap[event.code].tapEvents.forEach(e => {
+            e.data = {toggle: true};
+            this.eventBus.raise(e);
+          })
+          this.keyStateMap[event.code].pressed = true;
+        }
         this.sequence.push({key: event.code, lifeTimeMS: this.sequenceKeyLifetime});
         this.checkForSequence();
       } else {
+        // handle fire-once pr. press
         this.keyStateMap[event.code].pressed = false;
+        this.keyStateMap[event.code].tapEvents.forEach(e => {
+          e.data = {toggle: false}
+          this.eventBus.raise(e);
+        });
       }
     }
   }
 
-  private handleMouseEvent(event: MouseEvent) {
+  private handleMouseClickEvent(event: MouseEvent) {
     if (event.target != this.canvasRef) return;
     event.preventDefault();
-    const canvasBounds = this.canvasRef.getBoundingClientRect();
     const key = event.button as ClickTypes;
     if (key === ClickTypes.LEFT)
-      this.handleClicks(InputEventTypes.LEFT_CLICK, [event.x - canvasBounds.x, event.y - canvasBounds.y]);
+      this.handleClicks(InputEventTypes.LEFT_CLICK, [...this.mousePosition]);
     if (key === ClickTypes.RIGHT)
-      this.handleClicks(InputEventTypes.RIGHT_CLICK, [event.x - canvasBounds.x, event.y - canvasBounds.y]);
+      this.handleClicks(InputEventTypes.RIGHT_CLICK, [...this.mousePosition]);
   }
 
-  mapKeyEvent(keycode: Key, dispatcher: DispatchEvent) {
-    this.keyStateMap[keycode].registeredEvents.push(dispatcher);
+  private handleMouseMove(event: MouseEvent) {
+    if (this.mouseOnCanvas) {
+      const canvasBounds = this.canvasRef.getBoundingClientRect();
+      this.mousePosition[0] = event.x - canvasBounds.x;
+      this.mousePosition[1] = event.y - canvasBounds.y;
+    }
+
   }
 
-  frame(deltaTime: number) {
-    this.raiseEvents();
-    this.timeoutKey(deltaTime);
-  }
-
-  raiseEvents() {
+  private raiseEvents() {
     for (let key of Object.values(this.keys)) {
       if (!this.keyStateMap[key].pressed) continue;
       this.keyStateMap[key].registeredEvents.forEach(e => {
@@ -91,7 +133,7 @@ export class InputHandler {
     this.eventBus.raise(clickEvent(eventType, coordinate));
   }
 
-  checkForSequence() {
+  private checkForSequence() {
     if (this.sequence.length > this.maxSequence) {
       this.sequence = this.sequence.slice(1);
     }
@@ -104,17 +146,7 @@ export class InputHandler {
     }
   }
 
-  addSequence(keys: Key[], dispatcher: DispatchEvent) {
-    const aggregateKey = keys.reduce((str, k) => str += k, "");
-    const state = this.sequenceStateMap[aggregateKey];
-    if (Boolean(state)) {
-      state.registeredEvents.push(dispatcher);
-    } else {
-      this.sequenceStateMap[aggregateKey] = {tapEvents: [], registeredEvents: [dispatcher], pressed: false}
-    }
-  }
-
-  timeoutKey(deltaTime: number) {
+  private timeoutKey(deltaTime: number) {
     if (this.sequence.length > 0) {
       this.sequence.forEach(seq => seq.lifeTimeMS -= deltaTime);
       this.sequence = this.sequence.filter(seq => seq.lifeTimeMS > 0);

@@ -17,6 +17,11 @@ export enum ClickTypes {
   RIGHT = 2
 }
 
+export interface ToggleEvent {
+  toggle: boolean;
+}
+
+
 export const playerMoveUp = createDispatchEvent(InputEventTypes.PLAYER_MOVE_UP);
 export const playerMoveDown = createDispatchEvent(InputEventTypes.PLAYER_MOVE_DOWN);
 export const playerMoveLeft = createDispatchEvent(InputEventTypes.PLAYER_MOVE_LEFT);

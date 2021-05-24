@@ -1,6 +1,6 @@
 ﻿import {
   AssetLoader, Clock, debugEvent, EventBus, GameEntity, InputHandler, Key, playerMoveDown, playerMoveLeft,
-  playerMoveRight, playerMoveUp, Renderer, Transform
+  playerMoveRight, playerMoveUp, playerSprint, Renderer, Transform
 } from '@game/index';
 import {PlayerController} from '@game/src/logic/player-controller';
 
@@ -51,11 +51,12 @@ export class Orchestrator {
   }
 
   mapEvents(input: InputHandler) {
-    input.mapKeyEvent(this.key.W, playerMoveUp);
-    input.mapKeyEvent(this.key.S, playerMoveDown);
-    input.mapKeyEvent(this.key.A, playerMoveLeft);
-    input.mapKeyEvent(this.key.D, playerMoveRight);
-    input.addSequence([Key.K, Key.K], debugEvent);
+    input.addKey(this.key.W, playerMoveUp);
+    input.addKey(this.key.S, playerMoveDown);
+    input.addKey(this.key.A, playerMoveLeft);
+    input.addKey(this.key.D, playerMoveRight);
+    input.addKeySequence([Key.K, Key.K], debugEvent);
+    input.addKeyToggle(this.key.SHIFT_LEFT, playerSprint)
   }
 
 }
