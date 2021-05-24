@@ -5,3 +5,6 @@ export * from './key-state';
 export * from './key.enum';
 export * from './rendering-context.enum';
 export * from './sprite-mapping';
+export * from './event-listener';
+export * from './coordinate';
+export * from './sequence-key';

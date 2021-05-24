@@ -2,5 +2,9 @@
   {
     "name": "player",
     "file": "billy.png"
+  },
+  {
+    "name": "test",
+    "file": "test-sprite.png"
   }
 ]

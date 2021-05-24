@@ -2,5 +2,6 @@
 
 export interface KeyState {
   pressed: boolean;
-  registeredEvents: DispatchEvent[]
+  registeredEvents: DispatchEvent[],
+  tapEvents: DispatchEvent[],
 }

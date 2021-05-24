@@ -4,7 +4,9 @@
   scale: number = 1;
   rotRadian: number = 0;
 
-  constructor() {
+  constructor(x = 0, y = 0) {
+    this.x = x;
+    this.y = y;
   }
 
 }
