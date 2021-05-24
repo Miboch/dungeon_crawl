@@ -62,10 +62,8 @@ export class InputHandler {
     window.addEventListener('contextmenu', (event) => {
       if (event.target === this.canvasRef) event.preventDefault();
     });
-
     this.canvasRef.addEventListener('mouseenter', () => this.mouseOnCanvas = true);
     this.canvasRef.addEventListener('mouseleave', () => this.mouseOnCanvas = false);
-
   }
 
   private setupMap() {
@@ -87,7 +85,6 @@ export class InputHandler {
         this.sequence.push({key: event.code, lifeTimeMS: this.sequenceKeyLifetime});
         this.checkForSequence();
       } else {
-        // handle fire-once pr. press
         this.keyStateMap[event.code].pressed = false;
         this.keyStateMap[event.code].tapEvents.forEach(e => {
           e.data = {toggle: false}
