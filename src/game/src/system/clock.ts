@@ -31,7 +31,7 @@
     this.timeBefore = elapsed;
     this.accumulatedFrameTime += frameTime / 1000
     if (this.deltaTime > 1) {
-      this.deltaTime--;
+      this.deltaTime -= Math.floor(this.deltaTime);
       this.nextFrame(Number(this.accumulatedFrameTime.toFixed(3)));
       this.accumulatedFrameTime = 0;
     }
@@ -39,7 +39,10 @@
   }
 
   nextFrame(elapsedTime: number) {
-    // emit events to other systems if game is not paused
+    // inactive tab hack
+    if (elapsedTime >= 2) elapsedTime -= (elapsedTime - 1);
+
+    // loop
     this.continuousObserver.forEach(co => co.call(elapsedTime))
     if (!this.paused) {
       this.pauseableObservers.forEach(po => po.call(elapsedTime))

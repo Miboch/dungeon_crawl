@@ -2,7 +2,7 @@
 import {GameEntity} from '@game/src/model/game-entity';
 
 export class Renderer {
-  private context!: CanvasRenderingContext2D;
+  private context!: WebGLRenderingContext;
   private width: number = 0;
   private height: number = 0;
 
@@ -19,7 +19,8 @@ export class Renderer {
   }
 
   setCanvas(canvas: HTMLCanvasElement) {
-    this.context = canvas.getContext(RenderingContext.SIMPLE) as CanvasRenderingContext2D;
+    this.context = canvas.getContext(RenderingContext.GL) as WebGLRenderingContext;
+    this.context.clearColor(0, 0, 0, 1);
   }
 
   setDimension(width: number, height: number) {
@@ -36,8 +37,7 @@ export class Renderer {
   }
 
   clear() {
-    this.context.clearRect(0, 0, this.width, this.height);
-    this.context.fillRect(0, 0, this.width, this.height);
+    this.context.clear(this.context.COLOR_BUFFER_BIT);
   }
 
   drawScene() {
@@ -45,13 +45,19 @@ export class Renderer {
   }
 
   drawSprites() {
-    const e = Orchestrator.getInstance().gameEntities;
-    for (let i = 0; i < e.length; i++) {
-      if (!e[i].sprite.spriteReady) continue;
-      this.context.drawImage(e[i].sprite.imageData, e[i].transform.x, e[i].transform.y)
-    }
+    // const e = Orchestrator.getInstance().gameEntities;
+    // for (let i = 0; i < e.length; i++) {
+    //   if (!e[i].sprite.spriteReady) continue;
+    //   this.context.drawImage(e[i].sprite.imageData, e[i].transform.x, e[i].transform.y)
+    // }
 
+  }
+
+  getContext(): WebGLRenderingContext {
+    return this.context;
   }
 
 
 }
+
+export var ctx: WebGLRenderingContext;
