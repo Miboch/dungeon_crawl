@@ -1,6 +1,6 @@
 ﻿import {
   AssetLoader, Clock, debugEvent, EventBus, GameEntity, InputHandler, Key, playerMoveDown, playerMoveLeft,
-  playerMoveRight, playerMoveUp, playerSprint, Renderer, Transform
+  playerMoveRight, playerMoveUp, playerSprint, Renderer, Shader, Transform
 } from '@game/index';
 import {PlayerController} from '@game/src/logic/player-controller';
 

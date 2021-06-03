@@ -1,6 +1,5 @@
 ﻿import {Renderer} from '@game/src/system';
 
-
 export class Shader {
   _gl: WebGLRenderingContext;
   private _program: WebGLProgram;
